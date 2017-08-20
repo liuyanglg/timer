@@ -5,17 +5,15 @@ import com.aisino.mysql.uitls.ConnectionFactory;
 import com.aisino.mysql.uitls.JdbcUtils;
 import com.aisino.mysql.uitls.ReadFile;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.aisino.mysql.constants.SqlQuery.*;
 
@@ -65,7 +63,7 @@ public class UpdateTableJob implements Job {
         JdbcUtils.insertBatch(SQL_INSERT_TB_RA_CASE3, conCmp, tusList, keys1);
 
         Long timeEnd1 = System.currentTimeMillis();
-        log.info("更新用户中心新增数据，耗时为：" + getTimeString(timeEnd1 - timeStart1) + "ms");
+        log.info("更新用户中心新增数据，耗时为：" + getTimeString(timeEnd1 - timeStart1));
         /*更新正式库、审核库中每天新增的数据*/
         Long timeStart2 = System.currentTimeMillis();
         conCenter = ConnectionFactory.getConnectionCenter();
@@ -92,7 +90,7 @@ public class UpdateTableJob implements Job {
             JdbcUtils.insertBatch(SQL_INSERT_YESTERDAY_TB_RA_CASE3, conCmp, list, keys);
         }
         Long timeEnd2 = System.currentTimeMillis();
-        log.info("更新用户中心新增数据，耗时为：" + getTimeString(timeEnd2 - timeStart2) + "ms");
+        log.info("更新用户中心新增数据，耗时为：" + getTimeString(timeEnd2 - timeStart2) );
     }
 
     public void initParams() {
