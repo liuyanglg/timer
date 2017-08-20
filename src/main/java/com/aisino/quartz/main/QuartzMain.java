@@ -13,6 +13,15 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * @Package : com.aisino.quartz.main
+ * @Class : QuartzMain
+ * @Description : 定时任务入口main类
+ * @Author : liuyang
+ * @CreateDate : 2017-08-20 星期日 10:08:45
+ * @Version : V1.0.0
+ * @Copyright : 2017 liuyang Inc. All rights reserved.
+ */
 public class QuartzMain {
     public static Logger log = Logger.getLogger(QuartzMain.class.getName());
 
