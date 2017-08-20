@@ -11,4 +11,9 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.25'
+    compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.0'
+    compile group: 'org.quartz-scheduler', name: 'quartz-jobs', version: '2.3.0'
+    compile group: 'log4j', name: 'log4j', version: '1.2.17'
+
 }
