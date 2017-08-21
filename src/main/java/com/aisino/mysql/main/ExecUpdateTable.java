@@ -38,10 +38,10 @@ public class ExecUpdateTable {
     public static void main(String[] args) {
         initLog4j();
         initParams();
-        log.info("开始更新数据库数据......");
         /*更新用户中心每天新增的数据*/
         Long timeStart1 = System.currentTimeMillis();
         conCmp = ConnectionFactory.getConnectionCmp();
+        log.info("开始更新数据库数据......");
         JdbcUtils.execSql(SQL_CREATE_TB_RM, conCmp);
 
         conCmp = ConnectionFactory.getConnectionCmp();
