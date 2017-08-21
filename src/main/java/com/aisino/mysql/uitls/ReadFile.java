@@ -56,6 +56,51 @@ public class ReadFile {
         return propertiesMap;
     }
 
+    /**
+     * @Method : readPropertiesFile
+     * @Description : 读取*.properties格式属性文件
+     * @param inputStream :
+     * @return : java.util.Map<java.lang.String,java.lang.Object>
+     * @author : liuya
+     * @CreateDate : 2017-08-21 星期一 11:28:12
+     */
+    public static Map<String, Object> readPropertiesFile(InputStream inputStream) {
+        Map<String, Object> propertiesMap = new HashMap<String, Object>();
+        InputStream is = null;
+        Properties pro = new Properties();
+        try {
+            if (inputStream != null) {
+                is = inputStream;
+            }
+            pro.load(is);
+            Enumeration keys = pro.keys();
+            while (keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                propertiesMap.put(key, pro.getProperty(key));
+                if (!key.contains("password")) {
+                    log.info(key + "：" + pro.getProperty(key));
+                } else {
+                    log.info(key + "：" + "*******");
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.error(e.getMessage());
+                log.error("属性配置文件读取错误");
+            }
+        }
+        return propertiesMap;
+    }
+
     public static String getProjectRootPath() {
         File file = new File("");
         String projectPath = "";

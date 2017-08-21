@@ -132,6 +132,7 @@ public class SqlQuery {
             "  AND T_US.`c_taxnum` != ''\n" +
             "  AND T_US.`c_serviceid` IS NOT NULL\n" +
             "  AND T_US.`c_serviceid` != ''\n" +
+            "  AND T_US.`dt_adddate` < DATE_SUB(now(), INTERVAL 1 DAY)\n" +
             "LIMIT ?, ?;";
 
     /*   #2.1   查询usercenter.`ucenter_user_service`数据数量*/
@@ -155,7 +156,7 @@ public class SqlQuery {
             "        AND T_M.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY)\n" +
             "    );";
 
-     /*   #2.3   更新关系表tb_code_taxid_serviceid*/
+    /*   #2.3   更新关系表tb_code_taxid_serviceid*/
     /*   #2.3.1
           # 以税号为内连接的连接条件
           # 与表usercenter.`ucenter_user_service`建立关联关系，分3种情况：*/
@@ -230,9 +231,9 @@ public class SqlQuery {
             "  AND T_M.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY);";
 
     public final static String SQL_QUERY_TB_A_CASE1 = "SELECT\n" +
-            "  T_A.`code`  AS `codeA`,\n" +
+            "  T_A.`code` AS `codeA`,\n" +
             "  T_A.`taxid` AS `taxidA`,\n" +
-            "  T_M.`taxid` AS `taxidM`\n" +
+            "  T_M.`taxid`  AS `taxidM`\n" +
             "FROM\n" +
             "  dataserver.`tb_cmp_card_audit` T_A\n" +
             "  JOIN dataserver.`tb_cmp_card` T_M ON T_A.`code` = T_M.`code`\n" +
@@ -240,13 +241,13 @@ public class SqlQuery {
             "  T_A.`code` IS NOT NULL\n" +
             "  AND T_A.`code` != ''\n" +
             "  AND T_A.`taxid` IS NULL\n" +
-            "  AND T_M.`taxid` IS NOT NULL\n" +
+            "  AND T_M.`code` IS NOT NULL\n" +
             "  AND T_A.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY);";
 
     public final static String SQL_QUERY_TB_A_CASE2 = "SELECT\n" +
-            "  T_A.`code`  AS `codeA`,\n" +
+            "  T_A.`code` AS `codeA`,\n" +
             "  T_A.`taxid` AS `taxidA`,\n" +
-            "  T_M.`taxid` AS `taxidM`\n" +
+            "  T_M.`taxid`  AS `taxidM`\n" +
             "FROM\n" +
             "  dataserver.`tb_cmp_card_audit` T_A\n" +
             "  JOIN dataserver.`tb_cmp_card` T_M ON T_A.`code` = T_M.`code`\n" +
@@ -270,9 +271,22 @@ public class SqlQuery {
             "  AND T_A.`taxid` != ''\n" +
             "  AND T_A.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY);";
 
-    public final static String SQL_QUERY_TB_US_CASE2 = "SELECT DISTINCT\n" +
+    public final static String SQL_QUERY_TB_US_FOR_TM = "SELECT DISTINCT\n" +
             "  ?                  AS `code`,\n" +
-            "  T_US.`c_taxnum`    AS `taxid`,\n" +
+            "  T_US.`c_serviceid` AS `serviceid`\n" +
+            "FROM\n" +
+            "  usercenter.`ucenter_user_service` T_US\n" +
+            "WHERE\n" +
+            "  T_US.`c_taxnum` = ?\n" +
+            "  AND T_US.`c_taxnum` IS NOT NULL\n" +
+            "  AND T_US.`c_taxnum` != ''\n" +
+            "  AND T_US.`c_serviceid` IS NOT NULL\n" +
+            "  AND T_US.`c_serviceid` != ''";
+
+    public final static String SQL_QUERY_TB_US_FOR_TA_CASE1= "SELECT DISTINCT\n" +
+            "  ?                  AS `code`,\n" +
+            "  ?                  AS `taxidA`,\n" +
+            "  T_US.`c_taxnum`    AS `taxidM`,\n" +
             "  T_US.`c_serviceid` AS `serviceid`\n" +
             "FROM\n" +
             "  usercenter.`ucenter_user_service` T_US\n" +

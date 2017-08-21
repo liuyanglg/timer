@@ -108,7 +108,8 @@ public class JdbcUtils {
             while (rs.next()) {
                 Map<String, Object> map = new HashMap<String, Object>();
                 for (int i = 0; i < columns; i++) {
-                    map.put(rsmd.getColumnName(i + 1), getValueByType(rs, rsmd.getColumnType(i + 1), rsmd.getColumnName(i + 1)));
+                    map.put(rsmd.getColumnLabel(i + 1), getValueByType(rs, rsmd.getColumnType(i + 1), rsmd.getColumnLabel(i + 1)));
+                    System.out.println(rsmd.getColumnLabel(i+1));
                 }
                 list.add(map);
             }
