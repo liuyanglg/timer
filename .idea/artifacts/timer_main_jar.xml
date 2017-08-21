@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="timer_main:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/timer_main_jar</output-path>
+    <root id="archive" name="timer_main.jar">
+      <element id="module-output" name="timer_main" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.10/5b338f206827d88acd890739f400a9b7664e5984/slf4j-api-1.7.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/log4j/log4j/1.2.17/5af35056b4d257e4b64b9e8069c0746e8b08629f/log4j-1.2.17.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mchange/mchange-commons-java/0.2.11/2a6a6c1fe25f28f5a073171956ce6250813467ef/mchange-commons-java-0.2.11.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/5.1.25/6b2835d687a706678591febfd47b077dcce41595/mysql-connector-java-5.1.25.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mchange/c3p0/0.9.5.2/5f86cb6130bc6e8475615ed82d5b5e6fb226a86a/c3p0-0.9.5.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.quartz-scheduler/quartz-jobs/2.3.0/6649dc473708cece6f7e1923baafedd0d7128ebe/quartz-jobs-2.3.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.zaxxer/HikariCP-java6/2.3.13/376d13a7b2dc57379c550619fe02ecfe51e62465/HikariCP-java6-2.3.13.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.quartz-scheduler/quartz/2.3.0/a090397102a12f6241177c5d501835334bb7662a/quartz-2.3.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

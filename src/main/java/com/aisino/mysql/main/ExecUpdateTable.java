@@ -38,7 +38,7 @@ public class ExecUpdateTable {
     public static void main(String[] args) {
         initLog4j();
         initParams();
-
+        log.info("开始更新数据库数据......");
         /*更新用户中心每天新增的数据*/
         Long timeStart1 = System.currentTimeMillis();
         conCmp = ConnectionFactory.getConnectionCmp();
@@ -91,6 +91,8 @@ public class ExecUpdateTable {
         }
         Long timeEnd2 = System.currentTimeMillis();
         log.info("更新正式库和审核库新增数据，耗时为：" + getTimeString(timeEnd2 - timeStart2));
+        log.info("数据库数据更新完成。");
+
     }
 
     public static void initParams() {
@@ -178,7 +180,7 @@ public class ExecUpdateTable {
      */
     public static List<Map<String, Object>> getQueryFromTusList() {
         if (queryFromTusList == null) {
-            queryFromTusList = new ArrayList<>();
+            queryFromTusList = new ArrayList<Map<String, Object>>();
         }
         Connection connection = ConnectionFactory.getConnectionCenter();
         queryFromTusList = JdbcUtils.queryBySql(SqlQuery.SQL_QUERY_TB_US, connection);
@@ -197,8 +199,8 @@ public class ExecUpdateTable {
      */
     public static List<Map<String, Object>> queryByPage(String sql, Connection connection, int offset, int pageSize) {
         List<Map<String, Object>> list = null;
-        List<Map<String, Object>> page = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>();
+        List<Map<String, Object>> page = new ArrayList<Map<String, Object>>();
+        Map<String, Object> map = new HashMap<String, Object>();
         String[] keys = {"offset", "pageSize"};
         map.put("offset", offset);
         map.put("pageSize", pageSize);

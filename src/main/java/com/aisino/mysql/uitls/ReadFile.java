@@ -20,7 +20,7 @@ public class ReadFile {
      * @CreateDate : 2017-08-19 星期六 19:17:52
      */
     public static Map<String, Object> readPropertiesFile(String filePath) {
-        Map<String, Object> propertiesMap = new HashMap<>();
+        Map<String, Object> propertiesMap = new HashMap<String, Object>();
         InputStream is = null;
         Properties pro = new Properties();
         try {

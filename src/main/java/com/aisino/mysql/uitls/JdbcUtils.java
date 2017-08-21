@@ -95,7 +95,7 @@ public class JdbcUtils {
      * @CreateDate : 2017-08-18 星期五 22:06:43
      */
     public static List<Map<String, Object>> queryBySql(String sql, Connection connection) {
-        List<Map<String, Object>> list = new ArrayList<>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         PreparedStatement ps = null;
         ResultSetMetaData rsmd = null;
         ResultSet rs = null;
@@ -152,7 +152,7 @@ public class JdbcUtils {
      * @CreateDate : 2017-08-19 星期六 11:56:40
      */
     public static List<Map<String, Object>> queryBySql(String sql, Connection connection, List<Map<String, Object>> params, String[] keys) {
-        List<Map<String, Object>> list = new ArrayList<>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         PreparedStatement ps = null;
         ResultSetMetaData rsmd = null;
         ResultSet rs = null;
