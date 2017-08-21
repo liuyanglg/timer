@@ -14,7 +14,7 @@ public class SqlQuery {
 
     /*   #1   usercenter.`ucenter_user_service`表每天都有新增数据，需要将这些新增的数据与正式库和审核库数据建立关联关系*/
     /*   #1.1   查询 ucenter_user_service前一天新增的数据，即税号(c_taxnum)和服务单位ID(c_serviceid)*/
-    public final static String SQL_QUERY_TB_US = "SELECT\n" +
+    public final static String SQL_QUERY_YESTERDAY_TB_US = "SELECT\n" +
             "  T_US.`c_taxnum` ,\n" +
             "  T_US.`c_serviceid` \n" +
             "  FROM\n" +
@@ -24,7 +24,18 @@ public class SqlQuery {
             "  AND T_US.`c_serviceid` != ''\n" +
             "  AND T_US.`c_taxnum` IS NOT NULL\n" +
             "  AND T_US.`c_taxnum` != ''\n" +
-            "  AND T_US.`dt_adddate` >= DATE_SUB(now(), INTERVAL 1 DAY);";
+            "  AND T_US.`dt_adddate` >= DATE_SUB(NOW(), INTERVAL 1 DAY)\n" +
+            "LIMIT ?, ?;";
+
+    public final static String SQL_QUERY_YESTERDAY_TB_US_COUNT = "SELECT DISTINCT count(T_US.`c_id`)\n" +
+            "FROM\n" +
+            "  usercenter.`ucenter_user_service` T_US\n" +
+            "WHERE\n" +
+            "  T_US.`c_serviceid` IS NOT NULL\n" +
+            "  AND T_US.`c_serviceid` != ''\n" +
+            "  AND T_US.`c_taxnum` IS NOT NULL\n" +
+            "  AND T_US.`c_taxnum` != ''\n" +
+            "  AND T_US.`dt_adddate` >= DATE_SUB(NOW(), INTERVAL 1 DAY);";
 
 
     /*   #1.2  更新关系表tb_code_serviceid*/
@@ -132,7 +143,7 @@ public class SqlQuery {
             "  AND T_US.`c_taxnum` != ''\n" +
             "  AND T_US.`c_serviceid` IS NOT NULL\n" +
             "  AND T_US.`c_serviceid` != ''\n" +
-            "  AND T_US.`dt_adddate` < DATE_SUB(now(), INTERVAL 1 DAY)\n" +
+            "  AND T_US.`dt_adddate` < DATE_SUB(NOW(), INTERVAL 1 DAY)\n" +
             "LIMIT ?, ?;";
 
     /*   #2.1   查询usercenter.`ucenter_user_service`数据数量*/
@@ -153,7 +164,7 @@ public class SqlQuery {
             "        T_M.`taxid` = ?\n" +
             "        AND T_M.`taxid` IS NOT NULL\n" +
             "        AND T_M.`taxid` != ''\n" +
-            "        AND T_M.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY)\n" +
+            "        AND T_M.`createtime` >= DATE_SUB(NOW(), INTERVAL 1 DAY)\n" +
             "    );";
 
     /*   #2.3   更新关系表tb_code_taxid_serviceid*/
@@ -176,7 +187,7 @@ public class SqlQuery {
             "    AND T_A.`code` != ''\n" +
             "    AND T_A.`taxid` IS  NULL\n" +
             "    AND T_M.`taxid` IS NOT NULL\n" +
-            "    AND T_A.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY)\n" +
+            "    AND T_A.`createtime` >= DATE_SUB(NOW(), INTERVAL 1 DAY)\n" +
             ");";
 
     /*   #2.3.1.2
@@ -197,7 +208,7 @@ public class SqlQuery {
             "    AND T_A.`taxid` != ''\n" +
             "    AND T_M.`taxid` IS NOT NULL\n" +
             "    AND T_M.`taxid` != ''\n" +
-            "    AND T_A.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY)\n" +
+            "    AND T_A.`createtime` >= DATE_SUB(NOW(), INTERVAL 1 DAY)\n" +
             ");";
 
     /*   #2.3.1.3
@@ -214,7 +225,7 @@ public class SqlQuery {
             "    AND T_A.`code` IS NULL\n" +
             "    AND T_A.`taxid` IS NOT NULL\n" +
             "    AND T_A.`taxid` != ''\n" +
-            "    AND T_A.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY)\n" +
+            "    AND T_A.`createtime` >= DATE_SUB(NOW(), INTERVAL 1 DAY)\n" +
             ");";
 
     /*以下暂时没有用到*/
@@ -228,7 +239,7 @@ public class SqlQuery {
             "  AND T_M.`code` != ''\n" +
             "  AND T_M.`taxid` IS NOT NULL\n" +
             "  AND T_M.`taxid` != ''\n" +
-            "  AND T_M.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY);";
+            "  AND T_M.`createtime` >= DATE_SUB(NOW(), INTERVAL 1 DAY);";
 
     public final static String SQL_QUERY_TB_A_CASE1 = "SELECT\n" +
             "  T_A.`code` AS `codeA`,\n" +
@@ -242,7 +253,7 @@ public class SqlQuery {
             "  AND T_A.`code` != ''\n" +
             "  AND T_A.`taxid` IS NULL\n" +
             "  AND T_M.`code` IS NOT NULL\n" +
-            "  AND T_A.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY);";
+            "  AND T_A.`createtime` >= DATE_SUB(NOW(), INTERVAL 1 DAY);";
 
     public final static String SQL_QUERY_TB_A_CASE2 = "SELECT\n" +
             "  T_A.`code` AS `codeA`,\n" +
@@ -258,7 +269,7 @@ public class SqlQuery {
             "  AND T_A.`taxid` != ''\n" +
             "  AND T_M.`taxid` IS NOT NULL\n" +
             "  AND T_M.`taxid` != ''\n" +
-            "  AND T_A.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY);";
+            "  AND T_A.`createtime` >= DATE_SUB(NOW(), INTERVAL 1 DAY);";
 
     public final static String SQL_QUERY_TB_A_CASE3 = "SELECT\n" +
             "  T_A.`code`  AS `codeA`,\n" +
@@ -269,7 +280,7 @@ public class SqlQuery {
             "  T_A.`code` IS NULL\n" +
             "  AND T_A.`taxid` IS NOT NULL\n" +
             "  AND T_A.`taxid` != ''\n" +
-            "  AND T_A.`createtime` >= DATE_SUB(now(), INTERVAL 1 DAY);";
+            "  AND T_A.`createtime` >= DATE_SUB(NOW(), INTERVAL 1 DAY);";
 
     public final static String SQL_QUERY_TB_US_FOR_TM = "SELECT DISTINCT\n" +
             "  ?                  AS `code`,\n" +

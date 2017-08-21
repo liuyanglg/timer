@@ -116,5 +116,33 @@ public class JdbcUtilsTest {
         int i=0;
     }
 
+    @Test
+    public void test03() throws Exception {
+        int threadNum=5;
+        conCenter = ConnectionFactory.getConnectionCenter();
+        int totalSize = JdbcUtils.count(SQL_QUERY_YESTERDAY_TB_US_COUNT, conCenter);
+        String[] keys = {"c_serviceid", "c_taxnum"};
+        int pageSize=10;
+        int taskSize = totalSize / threadNum;
+        int remain = totalSize % taskSize;
+        for(int i=0;i<threadNum;i++){
+            SubThread subThread = new SubThread();
+            subThread.setThreadID(i);
+            subThread.setQuerySql(SQL_QUERY_YESTERDAY_TB_US);
+            subThread.setInsertSql(SQL_INSERT_TB_RM);
+            if(i<threadNum-1) {
+                subThread.setTaskSize(taskSize);
+            }else {
+                subThread.setTaskSize(taskSize+remain);
+            }
+            subThread.setOffset(i*taskSize);
+            subThread.setPageSize(pageSize);
+            subThread.setKeys(keys);
+            subThread.start();
+        }
+        System.out.println(totalSize);
+
+    }
+
 
 }

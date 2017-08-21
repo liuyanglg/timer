@@ -1,9 +1,7 @@
 package com.aisino.mysql.uitls;
 
-import com.aisino.global.utils.CryptUtils;
 import org.apache.log4j.Logger;
 
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
@@ -25,8 +23,8 @@ public class ConnectionFactory {
     public static Connection getConnectionCmp() {
         String projectPath = ReadFile.getProjectRootPath();
         if (map == null) {
-            InputStream inputStream= CryptUtils.decryptFile(projectPath + path);
-            map = ReadFile.readPropertiesFile(inputStream);
+//            InputStream inputStream= CryptUtils.decryptFile(projectPath + path);
+            map = ReadFile.readPropertiesFile(projectPath + path);
         }
         try {
             if (conCmp == null) {

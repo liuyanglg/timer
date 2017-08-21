@@ -204,6 +204,54 @@ public class JdbcUtils {
         return list;
     }
 
+    public static List<Map<String, Object>> queryPage(String sql, Connection connection, int offset,int pageSize) {
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        PreparedStatement ps = null;
+        ResultSetMetaData rsmd = null;
+        ResultSet rs = null;
+        int columns;
+        try {
+            ps = connection.prepareStatement(sql);
+            ps.setInt(1, offset);
+            ps.setInt(2, pageSize);
+            rs = ps.executeQuery();
+            rsmd = rs.getMetaData();
+            columns = rsmd.getColumnCount();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<String, Object>();
+                for (int i = 0; i < columns; i++) {
+                    map.put(rsmd.getColumnLabel(i + 1), getValueByType(rs, rsmd.getColumnType(i + 1), rsmd.getColumnLabel(i + 1)));
+                }
+                list.add(map);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return list;
+    }
+
     /**
      * @Method : insertBatch
      * @Description : 批量插入数据，此函数不具有一般通用性
@@ -264,6 +312,44 @@ public class JdbcUtils {
             size = Integer.parseInt(obj.toString());
         } catch (NumberFormatException e) {
             e.printStackTrace();
+        }
+        return size;
+    }
+
+    public static int count(String sql, Connection connection) {
+        int size=0;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                size = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return size;
     }
