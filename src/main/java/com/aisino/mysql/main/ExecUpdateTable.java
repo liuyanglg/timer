@@ -183,7 +183,7 @@ public class ExecUpdateTable {
             queryFromTusList = new ArrayList<Map<String, Object>>();
         }
         Connection connection = ConnectionFactory.getConnectionCenter();
-        queryFromTusList = JdbcUtils.queryBySql(SqlQuery.SQL_QUERY_YESTERDAY_TB_US, connection);
+        queryFromTusList = JdbcUtils.queryBySql(SqlQuery.SQL_QUERY_NEW_TB_US, connection);
         return queryFromTusList;
     }
 

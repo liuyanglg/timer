@@ -44,7 +44,7 @@ public class JdbcUtils {
         } catch (SQLException e) {
             e.printStackTrace();
             log.error(e.getMessage());
-            log.error("数据库连接异常："+url);
+            log.error("数据库连接异常：" + url);
         }
         return null;
     }
@@ -109,7 +109,7 @@ public class JdbcUtils {
                 Map<String, Object> map = new HashMap<String, Object>();
                 for (int i = 0; i < columns; i++) {
                     map.put(rsmd.getColumnLabel(i + 1), getValueByType(rs, rsmd.getColumnType(i + 1), rsmd.getColumnLabel(i + 1)));
-                    System.out.println(rsmd.getColumnLabel(i+1));
+                    System.out.println(rsmd.getColumnLabel(i + 1));
                 }
                 list.add(map);
             }
@@ -204,7 +204,51 @@ public class JdbcUtils {
         return list;
     }
 
-    public static List<Map<String, Object>> queryPage(String sql, Connection connection, int offset,int pageSize) {
+
+    public static List<Map<String, Object>> queryObject(String sql, Connection connection, Map<String, Object> params, String[] keys) {
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        PreparedStatement ps = null;
+        ResultSetMetaData rsmd = null;
+        ResultSet rs = null;
+        int columns;
+        try {
+            ps = connection.prepareStatement(sql);
+            for (int i = 0; i < keys.length; i++) {
+                Object value = params.get(keys[i]);
+                ps.setObject(i + 1, value);
+            }
+            rs = ps.executeQuery();
+            rsmd = rs.getMetaData();
+            columns = rsmd.getColumnCount();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<String, Object>();
+                for (int i = 0; i < columns; i++) {
+                    map.put(rsmd.getColumnLabel(i + 1), getValueByType(rs, rsmd.getColumnType(i + 1), rsmd.getColumnLabel(i + 1)));
+                }
+                list.add(map);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<Map<String, Object>> queryPage(String sql, Connection connection, int offset, int pageSize) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         PreparedStatement ps = null;
         ResultSetMetaData rsmd = null;
@@ -266,12 +310,18 @@ public class JdbcUtils {
         PreparedStatement ps = null;
         try {
             ps = connection.prepareStatement(sql);
+            int count = 0;
             for (Map<String, Object> param : params) {
                 for (int i = 0; i < keys.length; i++) {
                     String value = (String) param.get(keys[i]);
                     ps.setString(i + 1, value);
                 }
                 ps.addBatch();
+                count++;
+                if (count % 500 == 0) {
+                    ps.executeBatch();
+                    ps.clearBatch();
+                }
             }
 
             ps.executeBatch();//批量更新
@@ -317,7 +367,7 @@ public class JdbcUtils {
     }
 
     public static int count(String sql, Connection connection) {
-        int size=0;
+        int size = 0;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -366,6 +416,7 @@ public class JdbcUtils {
      * @CreateDate : 2017-08-18 星期五 22:04:54
      */
     private static Object getValueByType(ResultSet rs, int type, String name) throws SQLException {
+
         switch (type) {
             case Types.NUMERIC:
                 return rs.getLong(name);
