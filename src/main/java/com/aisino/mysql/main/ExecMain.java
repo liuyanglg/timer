@@ -1,45 +1,55 @@
 package com.aisino.mysql.main;
 
+import com.aisino.mysql.bean.JdbcConfig;
+import com.aisino.mysql.constants.JdbcProperties;
 import com.aisino.mysql.uitls.DBUtil;
 import com.aisino.mysql.uitls.JdbcUtils;
-import com.aisino.mysql.uitls.SubThread1;
+import com.aisino.mysql.uitls.SubThread2;
 import com.aisino.mysql.uitls.ThreadCounter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.aisino.mysql.constants.SqlQuery.*;
 
 public class ExecMain {
-//    public static  volatile int threadCounter=0;
+    //    public static  volatile int threadCounter=0;
     private static Connection centerConnection = null;
     private static Connection cmpConnection = null;
-    public static void main(String[] args) {
-        System.out.println(Thread.currentThread().getName() + "开始");//打印开始标记
 
+    public static void main(String[] args) {
+        init();
+        System.out.println(Thread.currentThread().getName() + "开始");//打印开始标记
+        int threadNum = 5;
         int totalSize = 0;
         try {
-            centerConnection = DBUtil.getConnection("center");
-            totalSize = JdbcUtils.count(SQL_QUERY_NEW_TB_US_COUNT, centerConnection);
+            cmpConnection = DBUtil.getConnection("cmp");
+            totalSize = JdbcUtils.count(SQL_QUERY_NEW_TB_A_COUNT, cmpConnection);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        String[] keys = {"c_serviceid", "c_taxnum", "c_taxnum"};
-        int pageSize = 50;
-        int taskSize = 100;
+
+        String[][] keys = {{"code", "taxid", "taxidM"},{"code", "taxid", "serviceid"}};
+        int pageSize = 501;
+        int taskSize = 0;
         int remain = 0;
-        if (taskSize > 0) {
-            remain = totalSize % taskSize;
+        if (totalSize % (pageSize * threadNum) == 0) {
+            taskSize = totalSize / threadNum;
+        } else {
+            remain = totalSize % (pageSize * threadNum);
+            taskSize = (totalSize - remain) / threadNum;
         }
-        int threadNum = 0;
-        if (taskSize > 0) {
-            threadNum = totalSize / taskSize;
+        if (taskSize == 0) {
+            threadNum = 1;
         }
         ThreadCounter threadCounter = new ThreadCounter(threadNum);
         for (int i = 0; i < threadNum; i++) {
-            SubThread1 subThread = new SubThread1(threadCounter);
-            subThread.setQuerySql(SQL_QUERY_NEW_TB_US);
-            subThread.setInsertSql(SQL_INSERT_TB_RA);
+            SubThread2 subThread = new SubThread2(threadCounter);
+            String[] querySqlArray = {SQL_QUERY_NEW_TB_A, SQL_QUERY_OLD_TB_US};
+            subThread.setQuerySql(querySqlArray);
+            subThread.setInsertSql(SQL_INSERT_NEW_TB_RA);
             if (i < threadNum - 1) {
                 subThread.setTaskSize(taskSize);
             } else {
@@ -64,6 +74,8 @@ public class ExecMain {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        destroy();
     }
 
 
@@ -71,9 +83,34 @@ public class ExecMain {
         System.out.println(threadName + "运行结束！");
     }
 
-    public static int getTaskSize(int totalSize,int pageSize){
-        int taskSize=0;
+    public static void init() {
+        JdbcConfig cmpConfig = new JdbcConfig();
+        cmpConfig.setUrl(JdbcProperties.CMP_URL);
+        cmpConfig.setUsername(JdbcProperties.CMP_USERNAME);
+        cmpConfig.setPassword(JdbcProperties.CMP_PASSWORD);
+        cmpConfig.setMaxWorkerThreads(30);
+        JdbcConfig centerConfig = new JdbcConfig();
+        centerConfig.setUrl(JdbcProperties.CENTER_URL);
+        centerConfig.setUsername(JdbcProperties.CENTER_USERNAME);
+        centerConfig.setPassword(JdbcProperties.CENTER_PASSWORD);
+        centerConfig.setMaxWorkerThreads(30);
 
-        return taskSize;
+        Map<String, JdbcConfig> datasourceMap = new HashMap<String, JdbcConfig>();
+        datasourceMap.put("cmp", cmpConfig);
+        datasourceMap.put("center", centerConfig);
+
+        try {
+            DBUtil.initDB(datasourceMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void destroy() {
+        try {
+            DBUtil.closeDataSource();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
