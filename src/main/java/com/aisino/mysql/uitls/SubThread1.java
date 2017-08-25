@@ -1,6 +1,6 @@
 package com.aisino.mysql.uitls;
 
-import com.aisino.mysql.main.ExecMain;
+import com.aisino.quartz.utils.TimerTaskJob;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SubThread1 extends Thread {
-    private ThreadCounter counter;
+    //    private ThreadCounter counter;
     private String querySql;
     private String insertSql;
     private int offset;
@@ -16,12 +16,10 @@ public class SubThread1 extends Thread {
     private int taskSize;
     private String[] keys;
 
-    public SubThread1(ThreadCounter counter) {
-        this.counter = counter;
+    public SubThread1() {
     }
 
-    public SubThread1(ThreadCounter counter, String querySql, String insertSql, int offset, int pageSize, int taskSize, String[] keys) {
-        this.counter = counter;
+    public SubThread1(String querySql, String insertSql, int offset, int pageSize, int taskSize, String[] keys) {
         this.querySql = querySql;
         this.insertSql = insertSql;
         this.offset = offset;
@@ -30,6 +28,9 @@ public class SubThread1 extends Thread {
         this.keys = keys;
     }
 
+//    public SubThread1(ThreadCounter counter) {
+//        this.counter = counter;
+//    }
 
     public String getQuerySql() {
         return querySql;
@@ -81,8 +82,18 @@ public class SubThread1 extends Thread {
 
     @Override
     public void run() {
-        System.out.println(Thread.currentThread().getName() + "开始...");//打印开始标记
+        Connection cenConnection = null;
+        Connection cmpConnection = null;
+        String threadName = "[" + Thread.currentThread().getName() + "] ";
+        try {
+            System.out.println(threadName+"start......");
+            cenConnection = DBUtil.getConnection("center");
+            cmpConnection = DBUtil.getConnection("cmp");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         int pages = 0;
+
         try {
             pages = taskSize / pageSize;
             if (taskSize % pageSize != 0) {
@@ -96,21 +107,18 @@ public class SubThread1 extends Thread {
         for (int i = 0; i < pages; i++) {
             int innerOffset = offset + i * pageSize;
             try {
-                Connection conCenter = DBUtil.getConnection("center");
                 List<Map<String, Object>> queryList = null;
                 if (querySql != null && querySql.trim().length() > 0) {
-                    queryList = JdbcUtils.queryPage(querySql, conCenter, innerOffset, pageSize);
+                    queryList = JdbcUtils.queryPage(querySql, cenConnection, innerOffset, pageSize);
                 }
-                Connection conCmp = DBUtil.getConnection("cmp");
                 if (insertSql != null && insertSql.trim().length() > 0) {
-                    JdbcUtils.insertBatch(insertSql, conCmp, queryList, keys);
+                    JdbcUtils.insertBatch(insertSql, cmpConnection, queryList, keys);
                 }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        counter.countDown();//计时器减1
-        System.out.println(Thread.currentThread().getName() + "结束. 还有" + counter.getCount() + " 个线程");
-        ExecMain.finish(this.getName());
+//        counter.countDown();//计时器减1
+        TimerTaskJob.countDown(threadName);
     }
 }

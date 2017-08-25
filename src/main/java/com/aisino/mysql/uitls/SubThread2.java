@@ -1,6 +1,6 @@
 package com.aisino.mysql.uitls;
 
-import com.aisino.mysql.main.ExecMain;
+import com.aisino.quartz.utils.TimerTaskJob;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SubThread2 extends Thread {
-    private ThreadCounter counter;
+//    private ThreadCounter counter;
     private String[] querySql;
     private String insertSql;
     private int offset;
@@ -17,12 +17,15 @@ public class SubThread2 extends Thread {
     private int taskSize;
     private String[][] keys;
 
-    public SubThread2(ThreadCounter counter) {
-        this.counter = counter;
+//    public SubThread2(ThreadCounter counter) {
+//        this.counter = counter;
+//    }
+
+
+    public SubThread2() {
     }
 
-    public SubThread2(ThreadCounter counter, String[] querySql, String insertSql, int offset, int pageSize, int taskSize, String[][] keys) {
-        this.counter = counter;
+    public SubThread2(String[] querySql, String insertSql, int offset, int pageSize, int taskSize, String[][] keys) {
         this.querySql = querySql;
         this.insertSql = insertSql;
         this.offset = offset;
@@ -31,6 +34,75 @@ public class SubThread2 extends Thread {
         this.keys = keys;
     }
 
+    public SubThread2(Runnable target, String[] querySql, String insertSql, int offset, int pageSize, int taskSize, String[][] keys) {
+        super(target);
+        this.querySql = querySql;
+        this.insertSql = insertSql;
+        this.offset = offset;
+        this.pageSize = pageSize;
+        this.taskSize = taskSize;
+        this.keys = keys;
+    }
+
+    public SubThread2(ThreadGroup group, Runnable target, String[] querySql, String insertSql, int offset, int pageSize, int taskSize, String[][] keys) {
+        super(group, target);
+        this.querySql = querySql;
+        this.insertSql = insertSql;
+        this.offset = offset;
+        this.pageSize = pageSize;
+        this.taskSize = taskSize;
+        this.keys = keys;
+    }
+
+    public SubThread2(String name, String[] querySql, String insertSql, int offset, int pageSize, int taskSize, String[][] keys) {
+        super(name);
+        this.querySql = querySql;
+        this.insertSql = insertSql;
+        this.offset = offset;
+        this.pageSize = pageSize;
+        this.taskSize = taskSize;
+        this.keys = keys;
+    }
+
+    public SubThread2(ThreadGroup group, String name, String[] querySql, String insertSql, int offset, int pageSize, int taskSize, String[][] keys) {
+        super(group, name);
+        this.querySql = querySql;
+        this.insertSql = insertSql;
+        this.offset = offset;
+        this.pageSize = pageSize;
+        this.taskSize = taskSize;
+        this.keys = keys;
+    }
+
+    public SubThread2(Runnable target, String name, String[] querySql, String insertSql, int offset, int pageSize, int taskSize, String[][] keys) {
+        super(target, name);
+        this.querySql = querySql;
+        this.insertSql = insertSql;
+        this.offset = offset;
+        this.pageSize = pageSize;
+        this.taskSize = taskSize;
+        this.keys = keys;
+    }
+
+    public SubThread2(ThreadGroup group, Runnable target, String name, String[] querySql, String insertSql, int offset, int pageSize, int taskSize, String[][] keys) {
+        super(group, target, name);
+        this.querySql = querySql;
+        this.insertSql = insertSql;
+        this.offset = offset;
+        this.pageSize = pageSize;
+        this.taskSize = taskSize;
+        this.keys = keys;
+    }
+
+    public SubThread2(ThreadGroup group, Runnable target, String name, long stackSize, String[] querySql, String insertSql, int offset, int pageSize, int taskSize, String[][] keys) {
+        super(group, target, name, stackSize);
+        this.querySql = querySql;
+        this.insertSql = insertSql;
+        this.offset = offset;
+        this.pageSize = pageSize;
+        this.taskSize = taskSize;
+        this.keys = keys;
+    }
 
     public String[] getQuerySql() {
         return querySql;
@@ -82,15 +154,18 @@ public class SubThread2 extends Thread {
 
     @Override
     public void run() {
+
         Connection cenConnection = null;
         Connection cmpConnection = null;
+        String threadName = "[" + Thread.currentThread().getName() + "] ";
         try {
-            cenConnection = DBUtil.getConnection("center");
+            System.out.println(threadName+"start......");
             cmpConnection = DBUtil.getConnection("cmp");
+            cenConnection = DBUtil.getConnection("center");
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println(Thread.currentThread().getName() + "开始...");//打印开始标记
+
         int pages = 0;
         try {
             pages = taskSize / pageSize;
@@ -105,34 +180,30 @@ public class SubThread2 extends Thread {
         for (int i = 0; i < pages; i++) {
             int innerOffset = offset + i * pageSize;
             try {
-//                Connection conCenter = DBUtil.getConnection("cmp");
                 List<Map<String, Object>> queryList1 = null;
                 if (querySql[0] != null && querySql[0].trim().length() > 0) {
                     long t = System.currentTimeMillis();
                     queryList1 = JdbcUtils.queryPage(querySql[0], cmpConnection, innerOffset, pageSize);
                 }
-                System.out.println(this.getName()+"queryList1:" + queryList1.size());
+//                System.out.println(this.getName()+"queryList1:" + queryList1.size());
 
                 List<Map<String, Object>> queryList2 = new ArrayList<Map<String, Object>>();
                 for(Map<String, Object>map:queryList1) {
-                    if(map.get("code")==null) {
-                        keys[0][2] = "taxid";
-                    }else {
-                        keys[0][2] = "taxidM";
+                    int len = keys[0].length;
+                    if(len==3) {
+                        if (map.get("code") == null) {
+                            keys[0][len - 1] = "taxid";
+                        } else {
+                            keys[0][len - 1] = "taxidM";
+                        }
                     }
-//                    Connection conCenter2 = DBUtil.getConnection("center");
                     List<Map<String, Object>>singleList = JdbcUtils.queryObject(querySql[1], cenConnection, map, keys[0]);
                     if(singleList.size()>0){
                         queryList2.addAll(singleList);
                     }
 
                 }
-                System.out.println(this.getName()+"queryList2:" + queryList2.size());
-
-//                if(conCenter2!=null){
-//                    conCenter2.close();
-//                }
-//                Connection conCmp = DBUtil.getConnection("center");
+//                System.out.println(this.getName()+"queryList2:" + queryList2.size());
                 if (insertSql != null && insertSql.trim().length() > 0) {
                     JdbcUtils.insertBatch(insertSql, cmpConnection, queryList2, keys[1]);
                 }
@@ -142,18 +213,7 @@ public class SubThread2 extends Thread {
             }
         }
 
-        try {
-            if(cmpConnection!=null){
-                cmpConnection.close();
-            }
-            if(cenConnection!=null){
-                cenConnection.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        counter.countDown();//计时器减1
-        System.out.println(Thread.currentThread().getName() + "结束. 还有" + counter.getCount() + " 个线程");
-        ExecMain.finish(this.getName());
+//        counter.countDown();//计时器减1
+        TimerTaskJob.countDown(threadName);
     }
 }

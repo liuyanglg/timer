@@ -28,7 +28,7 @@ public class DBUtil {
             p.setProperty("url", mysqlConfig.getUrl());
             p.setProperty("username", mysqlConfig.getUsername());
             p.setProperty("password", mysqlConfig.getPassword());
-            p.setProperty("maxActive", Integer.toString(mysqlConfig.getMaxWorkerThreads() * 2 + 1));
+            p.setProperty("maxTotal", Integer.toString(mysqlConfig.getMaxWorkerThreads() * 2 + 1));
             p.setProperty("maxIdle", Integer.toString(mysqlConfig.getMaxWorkerThreads() + 1));
             p.setProperty("maxWait", "1000");
             p.setProperty("removeAbandoned", "false");

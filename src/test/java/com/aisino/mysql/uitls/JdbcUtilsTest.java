@@ -125,37 +125,7 @@ public class JdbcUtilsTest {
     }
 
 
-    @Test
-    public void test01() throws Exception {
-        conCmp = ConnectionFactory.getConnectionCmp();
-        List<Map<String, Object>> list1 = null;
-        list1 = JdbcUtils.queryBySql(SQL_QUERY_NEW_TB_M, conCmp);
-        conCmp = ConnectionFactory.getConnectionCmp();
-        List<Map<String, Object>> list2 = null;
-        list2 = JdbcUtils.queryBySql(SQL_QUERY_TB_A_CASE1, conCmp);
-        conCmp = ConnectionFactory.getConnectionCmp();
-        List<Map<String, Object>> list3 = null;
-        list3 = JdbcUtils.queryBySql(SQL_QUERY_TB_A_CASE2, conCmp);
-        conCmp = ConnectionFactory.getConnectionCmp();
-        List<Map<String, Object>> list4 = null;
-        list4 = JdbcUtils.queryBySql(SQL_QUERY_TB_A_CASE3, conCmp);
-        conCmp = ConnectionFactory.getConnectionCmp();
-        List<Map<String, Object>> list5 = null;
-        list5 = JdbcUtils.queryBySql(SQL_QUERY_NEW_TB_M, conCmp);
-    }
 
-    @Test
-    public void test2() throws Exception {
-        List<Map<String, Object>> list = null;
-        List<Map<String, Object>> list2 = null;
-        conCmp = ConnectionFactory.getConnectionCmp();
-
-        list = JdbcUtils.queryBySql(SQL_QUERY_NEW_TB_M, conCmp);
-        String[] keys = {"code", "taxid"};
-        conCenter = ConnectionFactory.getConnectionCenter();
-        list2 = JdbcUtils.queryBySql(SQL_QUERY_TB_US_FOR_TM, conCenter, list, keys);
-        int i = 0;
-    }
 
     @Test
     public void test03() throws Exception {
@@ -174,9 +144,9 @@ public class JdbcUtilsTest {
         if (taskSize > 0) {
             threadNum = totalSize / taskSize;
         }
-        ThreadCounter threadCounter = new ThreadCounter(threadNum);
+//        ThreadCounter threadCounter = new ThreadCounter(threadNum);
         for (int i = 0; i < threadNum; i++) {
-            SubThread1 subThread = new SubThread1(threadCounter);
+            SubThread1 subThread = new SubThread1();
             subThread.setQuerySql(SQL_QUERY_NEW_TB_US);
             subThread.setInsertSql(SQL_INSERT_TB_RM);
             if (i < threadNum - 1) {
@@ -189,10 +159,10 @@ public class JdbcUtilsTest {
             subThread.setKeys(keys);
             subThread.start();
         }
-        while (true) {//等待所有子线程执行完
-            if (!threadCounter.hasNext()) break;
-            Thread.sleep(20 * 1000);
-        }
+//        while (true) {//等待所有子线程执行完
+//            if (!threadCounter.hasNext()) break;
+//            Thread.sleep(20 * 1000);
+//        }
         System.out.println(Thread.currentThread().getName() + "结束.");//打印结束标记
     }
 
@@ -213,9 +183,9 @@ public class JdbcUtilsTest {
         if (taskSize > 0) {
             threadNum = totalSize / taskSize;
         }
-        ThreadCounter threadCounter = new ThreadCounter(threadNum);
+//        ThreadCounter threadCounter = new ThreadCounter(threadNum);
         for (int i = 0; i < threadNum; i++) {
-            SubThread1 subThread = new SubThread1(threadCounter);
+            SubThread1 subThread = new SubThread1();
             subThread.setQuerySql(SQL_QUERY_NEW_TB_US);
             subThread.setInsertSql(SQL_INSERT_TB_RA);
             if (i < threadNum - 1) {
@@ -228,10 +198,10 @@ public class JdbcUtilsTest {
             subThread.setKeys(keys);
             subThread.start();
         }
-        while (true) {//等待所有子线程执行完
-            if (!threadCounter.hasNext()) break;
-            Thread.sleep(20 * 1000);
-        }
+//        while (true) {//等待所有子线程执行完
+//            if (!threadCounter.hasNext()) break;
+//            Thread.sleep(20 * 1000);
+//        }
         System.out.println(Thread.currentThread().getName() + "结束.");//打印结束标记
     }
 
@@ -252,10 +222,10 @@ public class JdbcUtilsTest {
         if (taskSize > 0) {
             threadNum = totalSize / taskSize;
         }
-        ThreadCounter threadCounter = new ThreadCounter(threadNum);
+//        ThreadCounter threadCounter = new ThreadCounter(threadNum);
         for (int i = 0; i < threadNum; i++) {
-            SubThread2 subThread = new SubThread2(threadCounter);
-            String[] querySqlArray = {SQL_QUERY_NEW_TB_A, SQL_QUERY_OLD_TB_US};
+            SubThread2 subThread = new SubThread2();
+            String[] querySqlArray = {SQL_QUERY_NEW_TB_A, SQL_QUERY_OLD_TB_US_FOR_A};
             subThread.setQuerySql(querySqlArray);
             subThread.setInsertSql(SQL_INSERT_NEW_TB_RA);
             if (i < threadNum - 1) {
@@ -268,10 +238,10 @@ public class JdbcUtilsTest {
             subThread.setKeys(keys);
             subThread.start();
         }
-        while (true) {//等待所有子线程执行完
-            if (!threadCounter.hasNext()) break;
-            Thread.sleep(20 * 1000);
-        }
+//        while (true) {//等待所有子线程执行完
+//            if (!threadCounter.hasNext()) break;
+//            Thread.sleep(20 * 1000);
+//        }
         System.out.println(Thread.currentThread().getName() + "结束.");//打印结束标记
     }
 

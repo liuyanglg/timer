@@ -2,7 +2,7 @@ package com.aisino.quartz.main;
 
 import com.aisino.mysql.uitls.ReadFile;
 import com.aisino.quartz.utils.QuartzManager;
-import com.aisino.quartz.utils.UpdateTableJob;
+import com.aisino.quartz.utils.TimerTaskJob;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -44,7 +44,7 @@ public class QuartzMain {
                 updateAtTime = timer;
             }
         }
-        QuartzManager.addJob(jobName, UpdateTableJob.class, updateAtTime);
+        QuartzManager.addJob(jobName, TimerTaskJob.class, updateAtTime);
     }
 
     /**
